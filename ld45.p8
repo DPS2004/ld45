@@ -4,33 +4,66 @@ __lua__
 function _init()
 	player = {x=0,y=0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0}
 	saws = {}
-	spawnsaw(60,60,50,50,20,20,1)
+	spawnsaw(60,60,50,50,20,20,30,8)
 end
 function ease(framedur,frame,start,target)
 	return(start + (((target - start) / framedur) * frame))
 end
 
-function spawnsaw(x,y,x1,y1,x2,y2,s)
+function spawnsaw(x,y,x1,y1,x2,y2,sp,size)
 	s={}
 	s.pos = 0
 	s.i = 0
 	s.x = x
 	s.y = y
+	s.ox = x
+	s.oy = y
 	s.x1 = x1
 	s.y1 = y1
 	s.x2 = x2
 	s.y2 = y2
-	s.s = s
+	s.sp = sp
+	s.size = size
 	s.b = 0
 	s.d = 0
 	s.f = false
 	add(saws,s)
 end
 function updatesaw(s)
-	--pain goes here
-	if s.pos = 0:
-
-end
+	s.i += 1
+	--pain went here
+	if s.pos == 0 then
+	
+		if s.i > 15 then
+			s.i = 0
+			s.ox = s.x1
+			s.oy = s.y1
+			s.pos = 2
+		else
+			s.x = ease(15,s.i,s.ox,s.x1)
+			s.y = ease(15,s.i,s.oy,s.y1)
+		end
+	elseif s.pos == 2 then
+		if s.i > s.sp then
+			s.i = 0
+			s.ox = s.x2
+			s.oy = s.y2
+			s.pos = 1
+		else
+			s.x = ease(s.sp,s.i,s.ox,s.x2)
+			s.y = ease(s.sp,s.i,s.oy,s.y2)
+		end
+	elseif s.pos == 1 then
+		if s.i > s.sp then
+			s.i = 0
+			s.ox = s.x1
+			s.oy = s.y1
+			s.pos = 2
+		else
+			s.x = ease(s.sp,s.i,s.ox,s.x1)
+			s.y = ease(s.sp,s.i,s.oy,s.y1)
+		end
+	end
 end
 function drawsaw(s)
 	s.d -= 1
@@ -92,6 +125,7 @@ function _update()
 		end
 	end
 	--end update player
+	foreach(saws,updatesaw)
 	--collision (this gonna suck)
 	foreach(saws,collide)
 end
