@@ -4,16 +4,33 @@ __lua__
 function _init()
 	player = {x=0,y=0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0}
 	saws = {}
-	spawnsaw(60,60)
+	spawnsaw(60,60,50,50,20,20,1)
 end
-function spawnsaw(x,y)
+function ease(framedur,frame,start,target)
+	return(start + (((target - start) / framedur) * frame))
+end
+
+function spawnsaw(x,y,x1,y1,x2,y2,s)
 	s={}
+	s.pos = 0
+	s.i = 0
 	s.x = x
 	s.y = y
+	s.x1 = x1
+	s.y1 = y1
+	s.x2 = x2
+	s.y2 = y2
+	s.s = s
 	s.b = 0
 	s.d = 0
 	s.f = false
 	add(saws,s)
+end
+function updatesaw(s)
+	--pain goes here
+	if s.pos = 0:
+
+end
 end
 function drawsaw(s)
 	s.d -= 1
@@ -225,3 +242,4 @@ __label__
 
 __sfx__
 000100002445021450184501e4501c4501a4501745015450124500f4500c4500c45012450104500a4500545001450004500040000400004000040000400004000040000400004000040000400004000040000400
+000100000162001620016200162001620016200162001620016200162001620016200162001620016200162001620016200162001620016200162001620016200162001620016200162001620016200162001620
