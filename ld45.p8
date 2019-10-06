@@ -1,6 +1,11 @@
 pico-8 cartridge // http://www.pico-8.com
 version 18
 __lua__
+-- buzzsaw cat
+-- by dps2004
+
+
+
 function _init()
 	player = {x=0,y=0,ox = 0, oy = 0, i = 0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0, reset = false,binvuln=0}
 	boss = {x=60,y=60,f=false,hp=10,sprite=14,walki=0,phase=0,ai = 10}
@@ -13,6 +18,7 @@ function _init()
 	starttime = 0
 	bossfinishtime = 0
 	startboss = false
+	deaths = 0
 	bsaws = {}
 end
 function ease(framedur,frame,start,target)
@@ -238,6 +244,7 @@ function bcollide(bs)
 				if player.speed !=1 then
 					sfx(2)
 				else
+					deaths += 1
 					player.reset = true
 					player.i = 0
 					player.binvuln = 30
@@ -250,12 +257,13 @@ function bcollide(bs)
 	end
 end
 function bosscollide()
-	if player.reset == false and player.binvuln < 0 then
+	if player.reset == false and player.binvuln < 0 and boss.phase != 5 then
 		if player.x >= (boss.x - 5) and player.x <= (boss.x + 7 - 2) then
 			if player.y >= (boss.y - 3) and player.y <= (boss.y + 5) then
 				if player.speed !=1 then
 					sfx(2)
 				else
+					deaths += 1
 					player.reset = true
 					player.i = 0
 					player.binvuln = 30
@@ -275,6 +283,7 @@ function collide(s)
 					sfx(2)
 				else
 					s.b = 8
+					deaths += 1
 					player.reset = true
 					player.i = 0
 					player.ox = player.x
@@ -336,10 +345,10 @@ function _update()
 			player.x = 120
 		end
 		--debug
-		if btnp(4) then
-			player.x = 120
-			player.y = 120
-		end
+	--	if btnp(4) then
+	--		player.x = 120
+	--		player.y = 120
+	--	end
 		if player.x > 113 and player.y > 115 and player.reset == false and level != 9 then
 			player.reset = true
 			level += 1
@@ -502,11 +511,17 @@ function _update()
 	foreach(bsaws,updatebsaw)
 	foreach(bsaws,bcollide)
 	if player.x > 113 and player.y > 115 and player.reset == false and level == 9 and boss.phase != 5 then
-		player.reset = true
-		player.binvuln = 15
-		player.i = 0
-		player.ox = player.x
-		player.oy = player.y
+		if boss.hp > 1 then 
+			player.reset = true
+			player.i = 0
+			player.ox = player.x
+			player.oy = player.y
+			player.binvuln = 15
+		else
+			player.binvuln = 100
+			player.x -= 5
+			player.y -= 5
+		end
 		projectile.i = 0
 		projectile.ox = 120
 		projectile.oy = 120
@@ -548,9 +563,16 @@ function _update()
 		sfx(24,3)
 	elseif boss.hp == 0 and boss.phase == 4 then
 		bossfinishtime = time()
+		if boss.y < 42 then
+			boss.y = 42
+		end
+		if boss.y > 110 then
+			boss.y = 110
+		end
 		boss.phase = 5
 		boss.sprite = 13
 		projectile.visible = false
+		showtime = true
 		music(22)
 		
 	end
@@ -607,6 +629,24 @@ function _draw()
 	if level == 1 and state == "game" and player.y < 70 then
 		print("touching saws will kill you",0,80,8)
 		-- no shit sherlock
+	end
+	if showtime then
+		if time() - bossfinishtime > 3 then
+			ftime = bossfinishtime - starttime
+			print("time: "..ftime.." seconds",0,0,8)
+		end
+		if time() - bossfinishtime > 5 then
+			if deaths == 0 then
+				blurb = ". perfect!"
+			else
+				blurb = "."
+			end
+			print("# of deaths: "..deaths..blurb,0,16,8)
+		end
+		if time() - bossfinishtime > 9  then
+			print("thank you for playing.",0,32,8)
+			print("game made by dps2004",0,120,8)
+		end
 	end
 end
 __gfx__
