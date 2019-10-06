@@ -19,7 +19,12 @@ function levelsetup(level)
 		music(14)
 	elseif level == 1 then
 		music(0)
-		spawnsaw(60,60,60,60,30,8)`
+		spawnsaw(60,60,60,60,30,8)
+	elseif level == 2 then
+		modsaw(1,60,0,60,120,30,false)
+	elseif level == 3 then
+		spawnsaw(0,60,120,60,30,8)
+		modsaw(1,60,0,60,120,30,false)
 	end
 end
 function modsaw(n,x1,y1,x2,y2,sp,delete)
@@ -29,13 +34,17 @@ function modsaw(n,x1,y1,x2,y2,sp,delete)
 		s.y1 = 0 - s.size
 		s.x2 = s.x
 		s.y2 = s.y1
-		s.pos = 0
 	else
+		s.ox = s.x
+		s.oy = s.y
+		s.pos = 3
 		s.x1 = x1
 		s.y1 = y1
 		s.x2 = x2
 		s.y2 = y2
 		s.sp = sp
+		s.i = 0
+
 	end
 end
 function spawnsaw(x1,y1,x2,y2,sp,size)
@@ -92,6 +101,16 @@ function updatesaw(s)
 		else
 			s.x = ease(s.sp,s.i,s.ox,s.x1)
 			s.y = ease(s.sp,s.i,s.oy,s.y1)
+		end
+	elseif s.pos == 3 then
+		if s.i > 15 then
+			s.i = 0
+			s.ox = s.x1
+			s.oy = s.y1
+			s.pos = 2
+		else
+			s.x = ease(15,s.i,s.ox,s.x1)
+			s.y = ease(15,s.i,s.oy,s.y1)
 		end
 	end
 end
