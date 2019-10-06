@@ -402,28 +402,88 @@ function _update()
 				boss.y += 1
 			end
 		end
-		
 		if boss.ai < 0 then
 			boss.ai = 10
 			spawnbsaw(player.x,-8,0,4,140)
 		end
-		bosscollide()
-		foreach(bsaws,updatebsaw)
-		foreach(bsaws,bcollide)
+	elseif boss.phase == 2 then
+		boss.sprite = 7
+		boss.i += 1
+		boss.ai -= 1
+		if boss.x > player.x then
+			boss.f = true
+		else
+			boss.f = false
+		end
+		if boss.i > 3 then
+			boss.i = 0
+			if boss.x > player.x then
+				boss.x -= 1
+			end
+			if boss.x < player.x then
+				boss.x += 1
+			end
+			if boss.y > player.y then
+				boss.y -= 1
+			end
+			if boss.y < player.y then
+				boss.y += 1
+			end
+		end
+		if boss.ai < 0 then
+			boss.ai = 15
+			spawnbsaw(player.x-120,player.y-120,3,3,240)
+			spawnbsaw(player.x+120,player.y-120,-3,3,240)
+		end
+	elseif boss.phase == 3 then
+		boss.sprite = 7
+		boss.i += 1
+		boss.ai -= 1
+		if boss.x > player.x then
+			boss.f = true
+		else
+			boss.f = false
+		end
+		if boss.i > 2 then
+			boss.i = 0
+			if boss.x > player.x then
+				boss.x -= 1
+			end
+			if boss.x < player.x then
+				boss.x += 1
+			end
+			if boss.y > player.y then
+				boss.y -= 1
+			end
+			if boss.y < player.y then
+				boss.y += 1
+			end
+		end
+		if boss.ai < 0 then
+			boss.ai = 15
+			spawnbsaw(player.x-128,player.y-120,3,3,240)
+			spawnbsaw(player.x+128,player.y-120,-3,3,240)
+			spawnbsaw(player.x,player.y+128,0,-4,140)
+		end
 	end
+	bosscollide()
+	foreach(bsaws,updatebsaw)
+	foreach(bsaws,bcollide)
 	if player.x > 113 and player.y > 115 and player.reset == false and level == 9 then
-			player.reset = true
-			player.binvuln = 30
-			player.i = 0
-			player.ox = player.x
-			player.oy = player.y
-			projectile.i = 0
-			projectile.active = true
-	end
+		player.reset = true
+		player.binvuln = 15
+		player.i = 0
+		player.ox = player.x
+		player.oy = player.y
+		projectile.i = 0
+		projectile.ox = 120
+		projectile.oy = 120
+		projectile.active = true
+ end
 	projectile.i += 1
 	if projectile.active then
 		if projectile.i > 15 then
-			sfx(16)
+			sfx(16,3)
 			projectile.i = 0
 			projectile.ox = projectile.x
 			projectile.oy = projectile.y
@@ -436,12 +496,21 @@ function _update()
 	elseif projectile.x != 120 and projectile.y != 120 then
 		if projectile.i > 10 then
 			projectile.i = 0
+			projectile.x = 120
+			projectile.y = 120
 			projectile.ox = 120
 			projectile.oy = 120
 		else
 			projectile.x = ease(10,projectile.i,projectile.ox,120)
 			projectile.y = ease(10,projectile.i,projectile.oy,120)
 		end
+	end
+	if boss.hp == 8 and boss.phase == 1 then
+		boss.phase = 2
+		sfx(22,3)
+	elseif boss.hp == 5 and boss.phase == 2 then
+		boss.phase = 3
+		sfx(23,3)
 	end
 	--end boss
 	foreach(saws,updatesaw)
@@ -715,6 +784,7 @@ __sfx__
 011000000c3300e3300f3300e3300c3300e3300f3300e3300f3301133013330113300f3301133013330113301333014330163301433013330143301633014330163301433013330113300f3300e3300c3300e330
 011000000c6551860518655186050c6550000518655000050c6550000518655000050c6550000518655000050c6550000518655000050c6550000518655000050c6550000518655000050c655000051865500005
 0002000006256092560a2560d2560f256122561425616256192561725617256192561b2561d2561f266202662127621276212762227622276202761d2661a2561725614256102560e2560c2460a2360822606216
+00020000012560325606256072560a2560b2560c2560c2560d2560e2560f2560f2560f256102560f2660f2660f27610276102761027610276102760e2660d2560b2560a256082560625605246042360322601216
 __music__
 00 43074344
 00 44074344
