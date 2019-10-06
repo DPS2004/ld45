@@ -24,28 +24,39 @@ function levelsetup(level)
 		modsaw(1,60,0,60,120,30,false)
 	elseif level == 3 then
 		spawnsaw(0,60,120,60,30,8)
-		modsaw(1,60,0,60,120,30,false)
+		modsaw(1,60,0,60,120,30)
+	elseif level == 4 then
+		modsaw(1,16,0,120,104,10)
+		modsaw(2,104,120,0,16,10)
+		spawnsaw(120,0,0,120,15,8)	
+	elseif level == 5 then
+		delsaw(1)
+		delsaw(2)
+		delsaw(3)
+		spawnsaw(56,56,56,56,30,16)
 	end
 end
-function modsaw(n,x1,y1,x2,y2,sp,delete)
+function delsaw(n)
 	s=saws[n]
-	if delete then
-		s.x1 = s.x
-		s.y1 = 0 - s.size
-		s.x2 = s.x
-		s.y2 = s.y1
-	else
-		s.ox = s.x
-		s.oy = s.y
-		s.pos = 3
-		s.x1 = x1
-		s.y1 = y1
-		s.x2 = x2
-		s.y2 = y2
-		s.sp = sp
-		s.i = 0
+	s.x1 = s.x
+	s.y1 = 0 - s.size
+	s.x2 = s.x
+	s.y2 = s.y1
+end
+function modsaw(n,x1,y1,x2,y2,sp)
+	s=saws[n]
 
-	end
+	s.ox = s.x
+	s.oy = s.y
+	s.pos = 3
+	s.x1 = x1
+	s.y1 = y1
+	s.x2 = x2
+	s.y2 = y2
+	s.sp = sp
+	s.i = 0
+
+	
 end
 function spawnsaw(x1,y1,x2,y2,sp,size)
 	s={}
@@ -124,18 +135,20 @@ function drawsaw(s)
 			s.f = true
 		end
 	end
-	spr(3 + s.b,s.x,s.y,1,1,s.f)
+	sspr(24 + s.b,0,8,8,s.x,s.y,s.size,s.size,s.f)
 end
 function collide(s)
 	if player.reset == false then
-		if player.x >= (s.x - 6) and player.x <= (s.x + 6) then
-			if player.y >= (s.y - 5) and player.y <= (s.y + 3) then
+		if player.x >= (s.x - 6) and player.x <= (s.x + s.size - 2) then
+			if player.y >= (s.y - 5) and player.y <= (s.y + s.size  - 5) then
 				if player.speed !=1 then
 					sfx(2)
 				else
-					s.b = 1
-					player.x = 0
-					player.y = 0
+					s.b = 8
+					player.reset = true
+					player.i = 0
+					player.ox = player.x
+					player.oy = player.y
 					sfx(0)
 				end
 			end
@@ -253,6 +266,10 @@ function _draw()
 		print("press ❎ to dash",0,104,8)
 		print("you are invincible while dashing",0,112,8)
 		print("touch the flag to win      -->",0,120,8)
+	end
+	if level == 1 and state == "game" and player.y < 70 then
+		print("touching saws will kill you",0,80,8)
+		-- no shit sherlock
 	end
 end
 __gfx__
