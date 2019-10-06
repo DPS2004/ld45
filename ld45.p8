@@ -247,6 +247,24 @@ function bcollide(bs)
 		end
 	end
 end
+function bosscollide()
+	if player.reset == false and player.binvuln < 0 then
+		if player.x >= (boss.x - 5) and player.x <= (boss.x + 7 - 2) then
+			if player.y >= (boss.y - 3) and player.y <= (boss.y + 5) then
+				if player.speed !=1 then
+					sfx(2)
+				else
+					player.reset = true
+					player.i = 0
+					player.binvuln = 30
+					player.ox = player.x
+					player.oy = player.y
+					sfx(0)
+				end
+			end
+		end
+	end
+end
 function collide(s)
 	if player.reset == false then
 		if player.x >= (s.x - 6) and player.x <= (s.x + s.size - 2) then
@@ -388,6 +406,7 @@ function _update()
 			boss.ai = 10
 			spawnbsaw(player.x,-8,0,4,140)
 		end
+		bosscollide()
 		foreach(bsaws,updatebsaw)
 		foreach(bsaws,bcollide)
 	end
