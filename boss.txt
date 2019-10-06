@@ -1,0 +1,18 @@
+boss encounter idea
+
+red cat floats menacingly
+
+shoots saws at you
+
+can drop blocks
+
+damaged by dashing over stationary red circles
+
+player has hp, if you lose it all, restart boss.
+
+
+spr 7 is boss
+spr 8 is boss sawblades
+spr 9 is boss block
+spr 10 is boss weak point
+spr 11-13 is defeat animation
