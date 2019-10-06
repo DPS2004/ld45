@@ -42,7 +42,28 @@ function levelsetup(level)
 		spawnsaw(120,60,60,60,8,8) --saw 8
 	elseif level == 7 then
 		delsaw(4)
+		modsaw(5,8,0,8,120,30)
+		modsaw(6,24,0,24,120,25)
+		modsaw(7,40,0,40,120,20)
+		modsaw(8,56,0,56,120,15)
+		spawnsaw(72,0,72,120,10,8) -- saw 9
+		spawnsaw(88,0,88,120,15,8) --saw 10
+		spawnsaw(104,0,104,120,20,8) --saw 11
+		spawnsaw(120,0,120,120,25,8) --saw 12
+	elseif level == 8 then
+		delsaw(5)
+		delsaw(6)
+		delsaw(7)
+		delsaw(8)
+		delsaw(9)
+		delsaw(10)
+		delsaw(11)
+		delsaw(12)
+		spawnsaw(8,0,8,52,20,16) -- saw 13
+		spawnsaw(8,112,8,68,20,16) -- saw 14
+		spawnsaw(24,0,24,52,20,16) -- saw 15
 	end
+
 end
 function delsaw(n)
 	s=saws[n]
@@ -213,7 +234,11 @@ function _update()
 		elseif player.x > 120then
 			player.x = 120
 		end
-		
+		--debug
+		if btnp(4) then
+			player.x = 120
+			player.y = 120
+		end
 		if player.x > 113 and player.y > 115 and player.reset == false then
 			player.reset = true
 			level += 1
