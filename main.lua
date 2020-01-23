@@ -6,7 +6,10 @@ function love.load()
     lovepotion = true
   else
     lovepotion = false
+  inittime = love.timer.getTime()
   end
+  pfont = love.graphics.newFont("PICO-8.ttf",5)
+  love.graphics.setFont(pfont)
   staticdelt = true
   -- game stuff
 	player = {x=0,y=0,ox = 0, oy = 0, i = 0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0, reset = false,binvuln=0}
@@ -32,14 +35,19 @@ function del(t,v)
   t.delete_at(li.index(v))
 end
 
-function picopr()
-  --TODO add pico-8 print function
+function picopr(text,x,y,color)
+  love.graphics.print(text,x,y)
 end
-function spr()
+function time()
+  return love.timer.getTime() - inittime
+end
+function spr(s,x,y,w,h,f)
+  picopr(s,x,y)
   --TODO spr
 end
-function sspr()
-  --TODO you get the idea
+function sspr(sx, sy, sw, sh, dx, dy, dw, dh, fx)
+  --TODO oh no
+  picopr("x",dx,dy)
 end
 function music()
   --TODO i have depression
@@ -56,8 +64,15 @@ end
 function btn()
   --TODO same here
 end
-function sin()
-  --TODO oh no math
+function sin(i)
+  return 0 - math.sin(i*math.pi)
+end
+--debug
+function love.keypressed(key)
+  if key == "d" and not lovepotion then
+    print(state)
+    print(level)
+  end
 end
 -- game functions
 function ease(framedur,frame,start,target)
@@ -629,15 +644,15 @@ function love.update(dt)
 	foreach(saws,collide)
 
 	--misc
-	if state == "ld" and love.timer.getTime() > 3 then
+	if state == "ld" and time() > 3 then
 		state = "ldtitle"
-	elseif state == "ldtitle" and love.timer.getTime() > 5 then
+	elseif state == "ldtitle" and time() > 5 then
 		state = "title"
 	end
 	if state == "title" and btnp(5) then
 		state = "game"
 		player.cooldown = 20
-		starttime = love.timer.getTime()
+		starttime = time()
 	end
 
 		
@@ -646,7 +661,7 @@ function love.draw()
 	cls(0)
 
 	
-	if not level == 9 then 
+	if level < 9  then 
 		spr(5,120,120)
 	end
 	if level == 9 then
@@ -660,8 +675,7 @@ function love.draw()
 	foreach(saws,drawsaw)
 	if state == "title" then
 		titlei = titlei + 0.01
-    -- will fix this later
-		--sspr(0,8,113,16,8,52-sin(titlei)*2.25,113,20+sin(titlei)*4.5)
+		sspr(0,8,113,16,8,52-sin(titlei)*2.25,113,20+sin(titlei)*4.5)
 		picopr("a game by dps2004",32,80,8)
 		picopr("press ❎ to start",32,88,8)
 	end
@@ -679,7 +693,7 @@ function love.draw()
 		-- no shit sherlock
 	end
 	if showtime then
-		if love.timer.getTime() - bossfinishtime > 3 then
+		if time() - bossfinishtime > 3 then
 			ftime = bossfinishtime - starttime
 			picopr("time: "..ftime.." seconds",0,0,8)
 		end
@@ -691,9 +705,10 @@ function love.draw()
 			end
 			picopr("# of deaths: "..deaths..blurb,0,16,8)
 		end
-		if love.timer.getTime() - bossfinishtime > 9  then
+		if time() - bossfinishtime > 9  then
 			picopr("thank you for playing.",0,32,8)
 			picopr("game made by dps2004",0,120,8)
 		end
 	end
+
 end
