@@ -6,7 +6,20 @@ function love.load()
     lovepotion = true
   else
     lovepotion = false
+  end
+  love.graphics.setDefaultFilter("nearest", "nearest")
+  
   inittime = love.timer.getTime()
+  if not lovepotion then
+    push = require "push"
+    windowWidth, windowHeight = 512, 512
+    gameWidth, gameHeight = 128,128
+    push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {
+      fullscreen = false,
+      resizable = true,
+      pixelperfect = true
+    })
+    push:setBorderColor{255,255,255}
   end
   pfont = love.graphics.newFont("PICO-8.ttf",5)
   love.graphics.setFont(pfont)
@@ -56,7 +69,9 @@ function foreach()
   --TODO this one is gonna suck
 end
 function cls()
-  --TODO however this one should be EZPZ
+  love.graphics.setColor(0, 0, 0)
+  love.graphics.rectangle("fill",0,0,128,128)
+	love.graphics.setColor(1, 1, 1)
 end
 function btnp()
   --TODO oh no time to visit discord
@@ -658,6 +673,9 @@ function love.update(dt)
 		
 end
 function love.draw()
+  if not lovepotion then
+    push:apply("start")
+  end
 	cls(0)
 
 	
@@ -677,7 +695,7 @@ function love.draw()
 		titlei = titlei + 0.01
 		sspr(0,8,113,16,8,52-sin(titlei)*2.25,113,20+sin(titlei)*4.5)
 		picopr("a game by dps2004",32,80,8)
-		picopr("press ❎ to start",32,88,8)
+		picopr("press (b) to start",31,88,8)
 	end
 	if state == "ld" then
 		spr(48,0,52,16,2)
@@ -710,5 +728,7 @@ function love.draw()
 			picopr("game made by dps2004",0,120,8)
 		end
 	end
-
+  if not lovepotion then
+    push:apply("end")
+  end
 end
