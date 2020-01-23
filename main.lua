@@ -24,7 +24,10 @@ function love.load()
   pfont = love.graphics.newFont("PICO-8.ttf",5)
   love.graphics.setFont(pfont)
   staticdelt = true
+  btntbl = {b0=false,b1=false,b2=false,b3=false,b4=false,b5=false}
   sprtbl = {}
+  --load graphics
+  titleimage = love.graphics.newImage("spr/title.png")
   for i=1,15 do
     table.insert(sprtbl,love.graphics.newImage("spr/"..tostring(i)..".png"))
   end
@@ -67,35 +70,124 @@ function spr(s,x,y,w,h,f)
   end
 end
 function sspr(sx, sy, sw, sh, dx, dy, dw, dh, fx)
-  --TODO oh no
+  love.graphics.draw(titleimage,dx,dy,0,dw/titleimage:getWidth(),dh/titleimage:getHeight())
   picopr("x",dx,dy)
 end
 function music()
   --TODO i have depression
 end
-function foreach()
-  --TODO this one is gonna suck
+function foreach(t,f)
+  for i,v in ipairs(t) do
+    f(v)
+  end
 end
 function cls()
   love.graphics.setColor(0, 0, 0)
   love.graphics.rectangle("fill",0,0,128,128)
 	love.graphics.setColor(1, 1, 1)
 end
-function btnp()
-  --TODO oh no time to visit discord
+
+function love.keypressed(b)
+  if not lovepotion then
+    if b=="left" then
+      btntbl.b0 = true
+    end
+    if b=="right" then
+      btntbl.b1 = true
+    if b=="up" then
+    end
+      btntbl.b2 = true
+    end
+    if b=="down" then
+      btntbl.b3 = true
+    end
+    if b=="z" then
+      btntbl.b4 = true
+    end
+    if b=="space" then
+      btntbl.b5 = true
+    end
+  end
 end
-function btn()
-  --TODO same here
+function love.keyreleased(b)
+  if not lovepotion then
+    if b=="left" then
+      btntbl.b0 = false
+    end
+    if b=="right" then
+      btntbl.b1 = false
+    end
+    if b=="up" then
+      btntbl.b2 = false
+    end
+    if b=="down" then
+      btntbl.b3 = false
+    end
+    if b=="z" then
+      btntbl.b4 = false
+    end
+    if b=="space" then
+      btntbl.b5 = false
+    end
+  end
+end
+--[[
+function love.gamepadpressed(j,b)
+  if lovepotion then
+    if b=="dpleft" then
+      btntbl.b0 = true
+    elseif b=="dpright" then
+      btntbl.b1 = true
+    elseif b=="dpup" then
+      btntbl.b2 = true
+    elseif b=="dpdown" then
+      btntbl.b3 = true
+    elseif b=="a" then
+      btntbl.b4 = true
+    elseif b=="b" then
+      btntbl.b5 = true
+    end
+  end
+end
+function love.gamepadreleased(j,b)
+  if lovepotion then
+    if b=="dpleft" then
+      btntbl.b0 = false
+    elseif b=="dpright" then
+      btntbl.b1 = false
+    elseif b=="dpup" then
+      btntbl.b2 = false
+    elseif b=="dpdown" then
+      btntbl.b3 = false
+    elseif b=="a" then
+      btntbl.b4 = false
+    elseif b=="b" then
+      btntbl.b5 = false
+    end
+  end
+end
+]]--
+function btn(b)
+  if b==0 then
+    return btntbl.b0
+  elseif b==1 then
+    return btntbl.b1
+  elseif b==2 then
+    return btntbl.b2
+  elseif b==3 then
+    return btntbl.b3
+  elseif b==4 then
+    return btntbl.b4
+  elseif b==5 then
+    return btntbl.b5
+  end
 end
 function sin(i)
   return 0 - math.sin(i*math.pi)
 end
 --debug
 function love.keypressed(key)
-  if key == "d" and not lovepotion then
-    print(state)
-    print(level)
-  end
+
 end
 -- game functions
 function ease(framedur,frame,start,target)
@@ -372,6 +464,7 @@ function collide(s)
 	end
 end
 function love.update(dt)
+  print(btntbl.b5)
   if staticdelt then
     delt = 0.5
   else
@@ -672,7 +765,7 @@ function love.update(dt)
 	elseif state == "ldtitle" and time() > 5 then
 		state = "title"
 	end
-	if state == "title" and btnp(5) then
+	if state == "title" and btn(5) then
 		state = "game"
 		player.cooldown = 20
 		starttime = time()
