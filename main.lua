@@ -24,6 +24,10 @@ function love.load()
   pfont = love.graphics.newFont("PICO-8.ttf",5)
   love.graphics.setFont(pfont)
   staticdelt = true
+  sprtbl = {}
+  for i=1,15 do
+    table.insert(sprtbl,love.graphics.newImage("spr/"..tostring(i)..".png"))
+  end
   -- game stuff
 	player = {x=0,y=0,ox = 0, oy = 0, i = 0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0, reset = false,binvuln=0}
 	boss = {x=60,y=60,f=false,hp=10,sprite=14,walki=0,phase=0,ai = 10}
@@ -55,8 +59,12 @@ function time()
   return love.timer.getTime() - inittime
 end
 function spr(s,x,y,w,h,f)
-  picopr(s,x,y)
-  --TODO spr
+  --picopr(s,x,y)
+  if f then
+    love.graphics.draw(sprtbl[s],x+8,y,0,-1)
+  else
+    love.graphics.draw(sprtbl[s],x,y)
+  end
 end
 function sspr(sx, sy, sw, sh, dx, dy, dw, dh, fx)
   --TODO oh no
@@ -698,7 +706,7 @@ function love.draw()
 		picopr("press (b) to start",31,88,8)
 	end
 	if state == "ld" then
-		spr(48,0,52,16,2)
+		spr(15,0,52,16,2)
 	end
 	if level == 0 and state == "game" and player.y < 60 then
 		picopr("press LDUR to move",0,96,8)
