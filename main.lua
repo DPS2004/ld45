@@ -1,7 +1,7 @@
 function love.load()
   
   -- port stuff
-
+  require "tesound"
   if pcall(potiontest) then
     lovepotion = true
   else
@@ -56,10 +56,7 @@ function love.load()
   for i=1,15 do
     table.insert(sprtbl,love.graphics.newImage("spr/"..tostring(i)..".png"))
   end
-  sfxtbl = {}
-  for i=0,30 do
-    table.insert(sfxtbl,love.audio.newSource("sfx/"..i..".wav", "static"))
-  end
+
   -- game stuff
 	player = {x=0,y=0,ox = 0, oy = 0, i = 0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0, reset = false,binvuln=0}
 	boss = {x=60,y=60,f=false,hp=10,sprite=14,walki=0,phase=0,ai = 10}
@@ -67,6 +64,7 @@ function love.load()
   speedwalkcooldown = 0
 	level = 0
 	levelsetup(0)
+  squeaked = false
 	state = "ld"
 	titlei = 0
 	projectile = {x=120,y=120,i=0,ox=120,oy=120,active = false,visible = true}
@@ -117,9 +115,9 @@ function sspr(sx, sy, sw, sh, dx, dy, dw, dh, fx)
   end
 end
 function music(m)
-  print("music: "..m)
-  --TODO i have depression
+
 end
+
 function foreach(t,f)
   for i,v in ipairs(t) do
     f(v)
@@ -131,7 +129,7 @@ function cls()
 	love.graphics.setColor(1, 1, 1)
 end
 function sfx(s)
-  sfxtbl[s+1]:play()
+  TEsound.play("sfx/"..s..".wav","static")
 end
 
 function love.keypressed(b)
@@ -489,7 +487,10 @@ function bcollide(bs)
 		if player.x >= (bs.x - 6) and player.x <= (bs.x + 8 - 2) then
 			if player.y >= (bs.y - 5) and player.y <= (bs.y + 8  - 5) then
 				if player.speed >1 then
-					sfx(2)
+          if not squeaked then
+            sfx(2)
+            squeaked = true
+          end
 				else
 					deaths =  deaths + 1
 					player.reset = true
@@ -508,7 +509,10 @@ function bosscollide()
 		if player.x >= (boss.x - 5) and player.x <= (boss.x + 7 - 2) then
 			if player.y >= (boss.y - 3) and player.y <= (boss.y + 5) then
 				if player.speed >1 then
-					sfx(2)
+          if not squeaked then
+            sfx(2)
+            squeaked = true
+          end
 				else
 					deaths = deaths + 1
 					player.reset = true
@@ -528,7 +532,10 @@ function collide(s)
 			if player.y >= (s.y - 5) and player.y <= (s.y + s.size  - 5) then
 
 				if player.speed >1 then
-					sfx(2)
+          if not squeaked then
+            sfx(2)
+            squeaked = true
+          end
 				else
 
 					s.b = 8
@@ -568,6 +575,7 @@ function love.update(dt)
 		if btn(5) and player.cooldown <=0 then
 			player.speed = 6
 			player.cooldown = 10
+      squeaked = false
 			
 		end
 		if btn(0) then
@@ -856,7 +864,8 @@ function love.update(dt)
 		player.cooldown = 20
 		starttime = time()
 	end
-
+  --music handler
+  TEsound.cleanup()
 		
 end
 function love.draw()
