@@ -2,15 +2,21 @@
 function love.load()
   
   -- port stuff
+
   if pcall(potiontest) then
     lovepotion = true
   else
     lovepotion = false
+    debugkb = true
   end
+  --force lp for debug
+  --lovepotion = true
   love.graphics.setDefaultFilter("nearest", "nearest")
   
   inittime = love.timer.getTime()
+  
   if not lovepotion then
+    fullscreen = false
     sxoffset,syoffset = 0,0
     push = require "push"
     windowWidth, windowHeight = 512, 512
@@ -19,11 +25,24 @@ function love.load()
       fullscreen = false,
       resizable = true,
       pixelperfect = true
+
     })
     push:setBorderColor{255,255,255}
   else
+    fullscreen = true
     --3ds exclusive stuff
-    sxoffset,syoffset = 128,128
+    sxoffset,syoffset = 36,0
+    push = require "push"
+    windowWidth, windowHeight = 400, 240
+    gameWidth, gameHeight = 200, 128
+    push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight,{
+      fullscreen = false,
+      resizable = false,
+      pixelperfect = not fullscreen,
+      stretched = fullscreen
+    } )
+    push:setBorderColor{0,0,0}
+    
     
   end
   pfont = love.graphics.newFont("PICO-8.ttf",5)
@@ -67,7 +86,13 @@ function del(t,v)
 end
 
 function picopr(text,x,y,color)
+  if color == 8 then
+    love.graphics.setColor(1, 0, 77/255)
+  else
+    love.graphics.setColor(1,1,1)
+  end
   love.graphics.print(text,x+sxoffset,y+syoffset)
+  love.graphics.setColor(1,1,1)
 end
 function time()
   return love.timer.getTime() - inittime
@@ -109,7 +134,7 @@ function sfx(s,c)
 end
 
 function love.keypressed(b)
-  if not lovepotion then
+  if not lovepotion or debugkb then
     if b=="left" then
       btntbl.b0 = true
     end
@@ -139,10 +164,20 @@ function love.keypressed(b)
         levelsetup(i)
       end
     end
+    if b == "s" and lovepotion then
+      fullscreen = not fullscreen
+      push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {
+        fullscreen = false,
+        resizable = false,
+        pixelperfect = not fullscreen,
+        stretched = fullscreen
+      })
+    end
   end
+
 end
 function love.keyreleased(b)
-  if not lovepotion then
+  if not lovepotion or debugkb then
     if b=="left" then
       btntbl.b0 = false
     end
@@ -168,16 +203,30 @@ function love.gamepadpressed(j,b)
   if lovepotion then
     if b=="dpleft" then
       btntbl.b0 = true
-    elseif b=="dpright" then
+    end
+    if b=="dpright" then
       btntbl.b1 = true
-    elseif b=="dpup" then
+    end
+    if b=="dpup" then
       btntbl.b2 = true
-    elseif b=="dpdown" then
+    end
+    if b=="dpdown" then
       btntbl.b3 = true
-    elseif b=="a" then
+    end
+    if b=="a" then
       btntbl.b4 = true
-    elseif b=="b" then
+    end
+    if b=="b" then
       btntbl.b5 = true
+    end
+    if b == "start" then
+      fullscreen = not fullscreen
+      push:setupScreen(gameWidth, gameHeight, windowWidth, windowHeight, {
+        fullscreen = false,
+        resizable = false,
+        pixelperfect = not fullscreen,
+        stretched = fullscreen
+      })
     end
   end
 end
@@ -725,7 +774,7 @@ function love.update(dt)
 	bosscollide()
 	foreach(bsaws,updatebsaw)
 	foreach(bsaws,bcollide)
-	if player.x > 113 and player.y > 115 and player.reset == false and level == 9 and boss.phase < 5 then
+	if player.x > 113 and player.y > 115 and player.reset == false and level == 9 and boss.phase < 5 and player.binvuln < 0 then
     print("hit boss!")
 		if boss.hp > 1 then 
 			player.reset = true
@@ -735,8 +784,6 @@ function love.update(dt)
 			player.binvuln = 15
 		else
 			player.binvuln = 100
-			player.x = player.x - 8
-			player.y = player.y - 8
 		end
 		projectile.i = 0
 		projectile.ox = 120
@@ -813,9 +860,8 @@ function love.update(dt)
 		
 end
 function love.draw()
-  if not lovepotion then
-    push:apply("start")
-  end
+
+  push:apply("start")
 	cls(0)
 
 	
@@ -868,7 +914,9 @@ function love.draw()
 			picopr("game made by dps2004",0,120,8)
 		end
 	end
-  if not lovepotion then
-    push:apply("end")
-  end
+  love.graphics.setColor(1, 0, 0)
+  love.graphics.rectangle("fill",-128+sxoffset,0+syoffset,128,128+syoffset)
+  love.graphics.rectangle("fill",128+sxoffset,0+syoffset,256+sxoffset,128+syoffset)
+	love.graphics.setColor(1, 1, 1)
+  push:apply("end")
 end
