@@ -23,7 +23,7 @@ function love.load()
   end
   pfont = love.graphics.newFont("PICO-8.ttf",5)
   love.graphics.setFont(pfont)
-  staticdelt = true
+  staticdelt = false
   btntbl = {b0=false,b1=false,b2=false,b3=false,b4=false,b5=false}
   sprtbl = {}
   --load graphics
@@ -52,7 +52,12 @@ function potiontest()
 end
 --p8 replication functions
 function del(t,v)
-  t.delete_at(li.index(v))
+  for i,x in ipairs(t) do
+    if x == v then
+      table.remove(t,i)
+      break
+    end
+  end
 end
 
 function picopr(text,x,y,color)
@@ -64,7 +69,7 @@ end
 function spr(s,x,y,w,h,f)
   --picopr(s,x,y)
   if f then
-    love.graphics.draw(sprtbl[s],x+8,y,0,-1)
+    love.graphics.draw(sprtbl[s],x+8,y,0,-1,1)
   else
     love.graphics.draw(sprtbl[s],x,y)
   end
@@ -86,6 +91,9 @@ function cls()
   love.graphics.rectangle("fill",0,0,128,128)
 	love.graphics.setColor(1, 1, 1)
 end
+function sfx()
+  --TODO export sfx and music
+end
 
 function love.keypressed(b)
   if not lovepotion then
@@ -94,8 +102,8 @@ function love.keypressed(b)
     end
     if b=="right" then
       btntbl.b1 = true
-    if b=="up" then
     end
+    if b=="up" then
       btntbl.b2 = true
     end
     if b=="down" then
@@ -104,8 +112,19 @@ function love.keypressed(b)
     if b=="z" then
       btntbl.b4 = true
     end
-    if b=="space" then
+    if b=="x" then
       btntbl.b5 = true
+    end
+    if b=="d" then
+      print("x: "..player.x)
+      print("y: "..player.y)
+      print("s: "..player.speed)
+    end
+    if b=="f" then
+      for i=0,9 do
+        level = i
+        levelsetup(i)
+      end
     end
   end
 end
@@ -126,12 +145,12 @@ function love.keyreleased(b)
     if b=="z" then
       btntbl.b4 = false
     end
-    if b=="space" then
+    if b=="x" then
       btntbl.b5 = false
     end
   end
 end
---[[
+
 function love.gamepadpressed(j,b)
   if lovepotion then
     if b=="dpleft" then
@@ -166,7 +185,7 @@ function love.gamepadreleased(j,b)
     end
   end
 end
-]]--
+
 function btn(b)
   if b==0 then
     return btntbl.b0
@@ -186,9 +205,6 @@ function sin(i)
   return 0 - math.sin(i*math.pi)
 end
 --debug
-function love.keypressed(key)
-
-end
 -- game functions
 function ease(framedur,frame,start,target)
 	return(start + (((target - start) / framedur) * frame))
@@ -410,7 +426,7 @@ function bcollide(bs)
 	if player.reset == false and player.binvuln < 0 then
 		if player.x >= (bs.x - 6) and player.x <= (bs.x + 8 - 2) then
 			if player.y >= (bs.y - 5) and player.y <= (bs.y + 8  - 5) then
-				if player.speed <=1 then
+				if player.speed >=1 then
 					sfx(2)
 				else
 					deaths =  deaths + 1
@@ -429,7 +445,7 @@ function bosscollide()
 	if player.reset == false and player.binvuln < 0 and not boss.phase == 5 then
 		if player.x >= (boss.x - 5) and player.x <= (boss.x + 7 - 2) then
 			if player.y >= (boss.y - 3) and player.y <= (boss.y + 5) then
-				if player.speed <=1 then
+				if player.speed >=1 then
 					sfx(2)
 				else
 					deaths = deaths + 1
@@ -448,7 +464,7 @@ function collide(s)
 	if player.reset == false then
 		if player.x >= (s.x - 6) and player.x <= (s.x + s.size - 2) then
 			if player.y >= (s.y - 5) and player.y <= (s.y + s.size  - 5) then
-				if player.speed <=1 then
+				if player.speed >=1 then
 					sfx(2)
 				else
 					s.b = 8
@@ -464,7 +480,7 @@ function collide(s)
 	end
 end
 function love.update(dt)
-  print(btntbl.b5)
+
   if staticdelt then
     delt = 0.5
   else
@@ -527,7 +543,7 @@ function love.update(dt)
 	--		player.x = 120
 	--		player.y = 120
 	--	end
-		if player.x > 113 and player.y > 115 and player.reset == false and not level == 9 then
+		if player.x > 113 and player.y > 115 and player.reset == false and level < 9 then
 			player.reset = true
 			level = level + 1
 			levelsetup(level)
@@ -537,7 +553,7 @@ function love.update(dt)
 		end
 		
 	end
-	player.i = player.i + dt
+	player.i = player.i + delt
 	if player.reset then
 		player.sprite = 6
 		if player.i > 15 then
@@ -688,7 +704,8 @@ function love.update(dt)
 	bosscollide()
 	foreach(bsaws,updatebsaw)
 	foreach(bsaws,bcollide)
-	if player.x > 113 and player.y > 115 and player.reset == false and level == 9 and not boss.phase == 5 then
+	if player.x > 113 and player.y > 115 and player.reset == false and level == 9 and boss.phase < 5 then
+    print("hit boss!")
 		if boss.hp > 1 then 
 			player.reset = true
 			player.i = 0
