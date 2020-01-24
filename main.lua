@@ -735,7 +735,8 @@ function love.update(dt)
 			projectile.x = ease(15,projectile.i,projectile.ox,boss.x)
 			projectile.y = ease(15,projectile.i,projectile.oy,boss.y)
 		end
-	elseif not projectile.x == 120 and not projectile.y == 120 then
+	elseif projectile.x < 120 and projectile.y < 120 then
+    print("returning")
 		if projectile.i > 10 then
 			projectile.i = 0
 			projectile.x = 120
