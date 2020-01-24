@@ -1,4 +1,3 @@
-
 function love.load()
   
   -- port stuff
@@ -16,7 +15,7 @@ function love.load()
   inittime = love.timer.getTime()
   
   if not lovepotion then
-    fullscreen = false
+    staticdelt = false
     sxoffset,syoffset = 0,0
     push = require "push"
     windowWidth, windowHeight = 512, 512
@@ -29,6 +28,7 @@ function love.load()
     })
     push:setBorderColor{255,255,255}
   else
+    staticdelt = true
     fullscreen = true
     --3ds exclusive stuff
     sxoffset,syoffset = 36,0
@@ -47,7 +47,7 @@ function love.load()
   end
   pfont = love.graphics.newFont("PICO-8.ttf",5)
   love.graphics.setFont(pfont)
-  staticdelt = false
+
   btntbl = {b0=false,b1=false,b2=false,b3=false,b4=false,b5=false}
   sprtbl = {}
   allspr = love.graphics.newImage("spr/all.png")
@@ -55,6 +55,10 @@ function love.load()
   titleimage = love.graphics.newImage("spr/title.png")
   for i=1,15 do
     table.insert(sprtbl,love.graphics.newImage("spr/"..tostring(i)..".png"))
+  end
+  sfxtbl = {}
+  for i=0,30 do
+    table.insert(sfxtbl,love.audio.newSource("sfx/"..i..".wav", "static"))
   end
   -- game stuff
 	player = {x=0,y=0,ox = 0, oy = 0, i = 0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0, reset = false,binvuln=0}
@@ -98,7 +102,6 @@ function time()
   return love.timer.getTime() - inittime
 end
 function spr(s,x,y,w,h,f)
-  --picopr(s,x,y)
   if f then
     love.graphics.draw(sprtbl[s],x+8+sxoffset,y+syoffset,0,-1,1)
   else
@@ -127,10 +130,8 @@ function cls()
   love.graphics.rectangle("fill",0+sxoffset,0+syoffset,128+sxoffset,128+syoffset)
 	love.graphics.setColor(1, 1, 1)
 end
-function sfx(s,c)
-  
-  --TODO export sfx and music
-  print("sfx: "..s)
+function sfx(s)
+  sfxtbl[s+1]:play()
 end
 
 function love.keypressed(b)
@@ -266,7 +267,6 @@ end
 function sin(i)
   return 0 - math.sin(i*math.pi)
 end
---debug
 -- game functions
 function ease(framedur,frame,start,target)
 	return(start + (((target - start) / framedur) * frame))
@@ -899,6 +899,7 @@ function love.draw()
 	if showtime then
 		if time() - bossfinishtime > 3 then
 			ftime = bossfinishtime - starttime
+      ftime = math.floor(ftime * 100) / 100
 			picopr("time: "..ftime.." seconds",0,0,8)
 		end
 		if time() - bossfinishtime > 5 then
@@ -914,7 +915,7 @@ function love.draw()
 			picopr("game made by dps2004",0,120,8)
 		end
 	end
-  love.graphics.setColor(1, 0, 0)
+  love.graphics.setColor(0, 0, 0)
   love.graphics.rectangle("fill",-128+sxoffset,0+syoffset,128,128+syoffset)
   love.graphics.rectangle("fill",128+sxoffset,0+syoffset,256+sxoffset,128+syoffset)
 	love.graphics.setColor(1, 1, 1)
