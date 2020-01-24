@@ -11,6 +11,7 @@ function love.load()
   
   inittime = love.timer.getTime()
   if not lovepotion then
+    sxoffset,syoffset = 0,0
     push = require "push"
     windowWidth, windowHeight = 512, 512
     gameWidth, gameHeight = 128,128
@@ -20,6 +21,10 @@ function love.load()
       pixelperfect = true
     })
     push:setBorderColor{255,255,255}
+  else
+    --3ds exclusive stuff
+    sxoffset,syoffset = 128,128
+    
   end
   pfont = love.graphics.newFont("PICO-8.ttf",5)
   love.graphics.setFont(pfont)
@@ -36,7 +41,7 @@ function love.load()
 	player = {x=0,y=0,ox = 0, oy = 0, i = 0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0, reset = false,binvuln=0}
 	boss = {x=60,y=60,f=false,hp=10,sprite=14,walki=0,phase=0,ai = 10}
 	saws = {}
-  
+  speedwalkcooldown = 0
 	level = 0
 	levelsetup(0)
 	state = "ld"
@@ -62,7 +67,7 @@ function del(t,v)
 end
 
 function picopr(text,x,y,color)
-  love.graphics.print(text,x,y)
+  love.graphics.print(text,x+sxoffset,y+syoffset)
 end
 function time()
   return love.timer.getTime() - inittime
@@ -70,15 +75,18 @@ end
 function spr(s,x,y,w,h,f)
   --picopr(s,x,y)
   if f then
-    love.graphics.draw(sprtbl[s],x+8,y,0,-1,1)
+    love.graphics.draw(sprtbl[s],x+8+sxoffset,y+syoffset,0,-1,1)
   else
-    love.graphics.draw(sprtbl[s],x,y)
+    love.graphics.draw(sprtbl[s],x+sxoffset,y+syoffset)
   end
 end
 function sspr(sx, sy, sw, sh, dx, dy, dw, dh, fx)
   qua = love.graphics.newQuad(sx,sy,sw,sh,128,128)
-  love.graphics.draw(allspr,qua,dx,dy,0,dw/sw,dh/sh)
-
+  if fx then 
+    love.graphics.draw(allspr,qua,dx+sxoffset+dw,dy+syoffset,0,-dw/sw,dh/sh)
+  else
+    love.graphics.draw(allspr,qua,dx+sxoffset,dy+syoffset,0,dw/sw,dh/sh)
+  end
 end
 function music(m)
   print("music: "..m)
@@ -91,7 +99,7 @@ function foreach(t,f)
 end
 function cls()
   love.graphics.setColor(0, 0, 0)
-  love.graphics.rectangle("fill",0,0,128,128)
+  love.graphics.rectangle("fill",0+sxoffset,0+syoffset,128+sxoffset,128+syoffset)
 	love.graphics.setColor(1, 1, 1)
 end
 function sfx(s,c)
@@ -525,13 +533,19 @@ function love.update(dt)
 		elseif btn(3) then
 			player.y = player.y + player.speed *delt
 		end
-		if not player.x == lastx or not player.y == lasty then
-			if player.animcooldown < 0 or player.speed >= 1 then
-				if player.sprite == 1 then
-					player.sprite = 2
-				else
-					player.sprite = 1
-				end
+    speedwalkcooldown = speedwalkcooldown - 1
+		if player.x ~= lastx or player.y ~= lasty then
+
+			if player.animcooldown < 0 or player.speed > 1 then
+        speedwalkcooldown = speedwalkcooldown - 1
+        if speedwalkcooldown < 0 then
+          speedwalkcooldown = 2
+          if player.sprite == 1 then
+            player.sprite = 2
+          else
+            player.sprite = 1
+          end
+        end
 				player.animcooldown = 5
 			end
 		end
