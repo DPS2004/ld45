@@ -26,6 +26,7 @@ function love.load()
   staticdelt = false
   btntbl = {b0=false,b1=false,b2=false,b3=false,b4=false,b5=false}
   sprtbl = {}
+  allspr = love.graphics.newImage("spr/all.png")
   --load graphics
   titleimage = love.graphics.newImage("spr/title.png")
   for i=1,15 do
@@ -35,7 +36,7 @@ function love.load()
 	player = {x=0,y=0,ox = 0, oy = 0, i = 0,f=false,sprite = 1,animcooldown = 0,speed = 1,cooldown = 0, reset = false,binvuln=0}
 	boss = {x=60,y=60,f=false,hp=10,sprite=14,walki=0,phase=0,ai = 10}
 	saws = {}
-
+  
 	level = 0
 	levelsetup(0)
 	state = "ld"
@@ -75,10 +76,12 @@ function spr(s,x,y,w,h,f)
   end
 end
 function sspr(sx, sy, sw, sh, dx, dy, dw, dh, fx)
-  love.graphics.draw(titleimage,dx,dy,0,dw/titleimage:getWidth(),dh/titleimage:getHeight())
-  picopr("x",dx,dy)
+  qua = love.graphics.newQuad(sx,sy,sw,sh,128,128)
+  love.graphics.draw(allspr,qua,dx,dy,0,dw/sw,dh/sh)
+
 end
-function music()
+function music(m)
+  print("music: "..m)
   --TODO i have depression
 end
 function foreach(t,f)
@@ -91,8 +94,10 @@ function cls()
   love.graphics.rectangle("fill",0,0,128,128)
 	love.graphics.setColor(1, 1, 1)
 end
-function sfx()
+function sfx(s,c)
+  
   --TODO export sfx and music
+  print("sfx: "..s)
 end
 
 function love.keypressed(b)
@@ -426,7 +431,7 @@ function bcollide(bs)
 	if player.reset == false and player.binvuln < 0 then
 		if player.x >= (bs.x - 6) and player.x <= (bs.x + 8 - 2) then
 			if player.y >= (bs.y - 5) and player.y <= (bs.y + 8  - 5) then
-				if player.speed >=1 then
+				if player.speed >1 then
 					sfx(2)
 				else
 					deaths =  deaths + 1
@@ -442,10 +447,10 @@ function bcollide(bs)
 	end
 end
 function bosscollide()
-	if player.reset == false and player.binvuln < 0 and not boss.phase == 5 then
+	if player.reset == false and player.binvuln < 0 and boss.phase < 5 then
 		if player.x >= (boss.x - 5) and player.x <= (boss.x + 7 - 2) then
 			if player.y >= (boss.y - 3) and player.y <= (boss.y + 5) then
-				if player.speed >=1 then
+				if player.speed >1 then
 					sfx(2)
 				else
 					deaths = deaths + 1
@@ -464,9 +469,11 @@ function collide(s)
 	if player.reset == false then
 		if player.x >= (s.x - 6) and player.x <= (s.x + s.size - 2) then
 			if player.y >= (s.y - 5) and player.y <= (s.y + s.size  - 5) then
-				if player.speed >=1 then
+
+				if player.speed >1 then
 					sfx(2)
 				else
+
 					s.b = 8
 					deaths = deaths + 1
 					player.reset = true
